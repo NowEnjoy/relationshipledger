@@ -17,8 +17,7 @@ root.render(
 // Register Service Worker for PWA
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    // 还原为硬编码路径以适配特定的部署环境
-    navigator.serviceWorker.register('/relationshipledger/sw.js', { scope: '/relationshipledger/' })
+    navigator.serviceWorker.register('/sw.js')
       .then(registration => {
         console.log('SW registered: ', registration);
       })
