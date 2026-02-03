@@ -24,7 +24,7 @@ const PeopleDirectory: React.FC<PeopleDirectoryProps> = ({ people, onPersonClick
         {sortedPeople.length === 0 ? (
            <div className="text-center py-20 text-slate-400">
              <User size={48} className="mx-auto mb-2 opacity-50" />
-             <p>添加第一笔交易以建立通讯录</p>
+             <p>添加第一笔人情以建立通讯录</p>
            </div>
         ) : (
           sortedPeople.map(person => (
@@ -53,11 +53,11 @@ const PeopleDirectory: React.FC<PeopleDirectoryProps> = ({ people, onPersonClick
               </div>
               <div className="flex items-center space-x-3">
                 <div className="text-right">
-                    <p className={`font-bold text-sm ${person.balance >= 0 ? 'text-red-500' : 'text-emerald-500'}`}>
-                        {person.balance >= 0 ? '送出去' : '收进来'}
+                    <p className={`font-bold text-sm ${person.balance >= 0 ? 'text-receive' : 'text-give'}`}>
+                        {person.balance >= 0 ? '收进来' : '送出去'}
                     </p>
                     <p className="text-xs text-slate-400">
-                        Net: {CURRENCY_SYMBOL}{Math.abs(person.balance)}
+                        Net: {person.balance < 0 ? '-' : ''}{CURRENCY_SYMBOL}{Math.abs(person.balance)}
                     </p>
                 </div>
                 <ChevronRight size={18} className="text-slate-300" />

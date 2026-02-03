@@ -1,8 +1,9 @@
+
 name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [ main ]
+    branches: ["main"]
   workflow_dispatch:
 
 permissions:
@@ -15,33 +16,42 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
+  build-and-deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Setup Node
+
+      - name: Set up Node
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
-          # Removed cache: 'npm' because it requires package-lock.json
+          node-version: 20
+          cache: 'npm'
+
       - name: Install dependencies
-        # Changed from 'npm ci' to 'npm install' to generate lockfile on the fly
         run: npm install
+
       - name: Build
         run: npm run build
+
+      - name: Copy Static Assets
+        run: |
+          cp sw.js dist/
+          cp manifest.json dist/
+          # 确保图标等静态链接也能访问，如果它们在根目录的话
+          # 如果有特定图片文件，也可以在这里 cp
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./dist
+          path: './dist'
 
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4

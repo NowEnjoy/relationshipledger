@@ -1,3 +1,4 @@
+
 import { AppState, Person, Transaction, TransactionType } from '../types';
 import { STORAGE_KEY_DATA } from '../constants';
 
@@ -6,7 +7,6 @@ const generateId = (): string => {
 };
 
 // --- Helper: Rebuild People State from Transactions ---
-// This ensures data consistency after imports or deletions
 const recalculateState = (transactions: Transaction[]): AppState => {
   const peopleMap: Record<string, Person> = {};
 
@@ -24,22 +24,18 @@ const recalculateState = (transactions: Transaction[]): AppState => {
     }
 
     const p = peopleMap[tx.personId];
-    
-    // Update basic info in case it changed in the transaction
     p.name = tx.personName; 
     
-    // Update Interaction Date
     if (tx.date > p.lastInteraction) {
       p.lastInteraction = tx.date;
     }
 
-    // Update Totals
     if (tx.type === TransactionType.GIVE) {
       p.totalGiven += tx.amount;
-      p.balance += tx.amount;
+      p.balance -= tx.amount; // Giving reduces the net balance
     } else {
       p.totalReceived += tx.amount;
-      p.balance -= tx.amount;
+      p.balance += tx.amount; // Receiving increases the net balance
     }
   });
 
@@ -48,8 +44,6 @@ const recalculateState = (transactions: Transaction[]): AppState => {
     people: Object.values(peopleMap)
   };
 };
-
-// --- Storage Functions ---
 
 export const loadData = (): AppState => {
   const raw = localStorage.getItem(STORAGE_KEY_DATA);
@@ -73,15 +67,9 @@ export const clearAllData = (): void => {
   localStorage.removeItem(STORAGE_KEY_DATA);
 };
 
-// --- Export Functions ---
-
 export const exportDataJSON = (): void => {
   const state = loadData();
-  
-  // DIRECT EXPORT: No wrapper, no encryption, just the raw data object.
-  // Using 2 spaces indentation for readability (Show Real Data)
   const jsonString = JSON.stringify(state, null, 2);
-  
   const blob = new Blob([jsonString], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
@@ -94,16 +82,14 @@ export const exportDataJSON = (): void => {
 export const exportDataCSV = (): void => {
   const state = loadData();
   const headers = ['Date', 'Type', 'Person', 'Amount', 'Occasion', 'Notes', 'Tags'];
-  
-  // Simple CSV generation showing real data
   const rows = state.transactions.map(tx => [
     tx.date,
-    tx.type === 'GIVE' ? '送出' : '收到', // Localized for readability
-    `"${tx.personName}"`, // Quote names to handle commas
+    tx.type === 'GIVE' ? '送出' : '收到',
+    `"${tx.personName}"`,
     tx.amount,
     tx.occasion,
-    `"${tx.notes.replace(/"/g, '""')}"`, // Escape quotes in notes
-    `"${(tx.tags || []).join(';')}"` // Semicolon separated tags
+    `"${tx.notes.replace(/"/g, '""')}"`,
+    `"${(tx.tags || []).join(';')}"`
   ]);
 
   const csvContent = [
@@ -111,7 +97,6 @@ export const exportDataCSV = (): void => {
     ...rows.map(r => r.join(','))
   ].join('\n');
 
-  // Add BOM for Excel utf-8 compatibility so Chinese characters display correctly
   const blob = new Blob(["\ufeff" + csvContent], { type: 'text/csv;charset=utf-8;' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
@@ -121,20 +106,13 @@ export const exportDataCSV = (): void => {
   URL.revokeObjectURL(url);
 };
 
-// --- Import Function ---
-
 export const importDataJSON = (jsonString: string): AppState => {
   try {
     const parsed = JSON.parse(jsonString);
-    
     let importedTransactions: Transaction[] = [];
-
-    // Handle different formats
     if (parsed.transactions && Array.isArray(parsed.transactions)) {
-        // Direct format (New)
         importedTransactions = parsed.transactions;
     } else if (parsed.payload && typeof parsed.payload === 'object' && Array.isArray(parsed.payload.transactions)) {
-        // Wrapper format (Old)
         importedTransactions = parsed.payload.transactions;
     } else {
         throw new Error("Unknown file format");
@@ -142,8 +120,6 @@ export const importDataJSON = (jsonString: string): AppState => {
 
     const currentData = loadData();
     const existingIds = new Set(currentData.transactions.map(t => t.id));
-    
-    // Filter duplicates based on ID
     const newUniqueTransactions = importedTransactions.filter(tx => !existingIds.has(tx.id));
 
     if (newUniqueTransactions.length === 0) {
@@ -151,22 +127,17 @@ export const importDataJSON = (jsonString: string): AppState => {
         return currentData;
     }
 
-    // Merge and Recalculate
     const allTransactions = [...currentData.transactions, ...newUniqueTransactions];
     const newState = recalculateState(allTransactions);
-    
     saveData(newState);
     alert(`成功导入 ${newUniqueTransactions.length} 条记录 (Import Successful).`);
     return newState;
-
   } catch (e) {
     console.error(e);
     alert("导入失败：文件格式错误 (Import Failed).");
     return loadData();
   }
 };
-
-// --- Transaction Logic Helpers ---
 
 export const addTransaction = (
   state: AppState, 
@@ -177,7 +148,6 @@ export const addTransaction = (
     id: generateId(),
     createdAt: new Date().toISOString(),
   };
-
   const newTransactions = [newTx, ...state.transactions];
   return recalculateState(newTransactions);
 };

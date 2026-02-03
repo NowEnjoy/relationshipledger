@@ -56,7 +56,6 @@ const Analytics: React.FC<AnalyticsProps> = ({ state }) => {
   const monthlyData = Object.values(monthlyDataMap).sort((a: any, b: any) => a.name.localeCompare(b.name));
 
   // Data processing for Top Contacts (Top 5 by volume from filtered set)
-  // We need to aggregate filtered transactions by person, not just use the person's total global balance
   const personAggregates = filteredTransactions.reduce((acc, tx) => {
     if (!acc[tx.personId]) {
       acc[tx.personId] = { name: tx.personName, give: 0, receive: 0 };
@@ -200,8 +199,8 @@ const Analytics: React.FC<AnalyticsProps> = ({ state }) => {
                   <YAxis dataKey="name" type="category" width={60} tick={{fill: '#64748b'}} />
                   <Tooltip cursor={{fill: 'transparent'}} />
                   <Legend />
-                  <Bar dataKey="give" fill="#ef4444" radius={[0, 4, 4, 0]} name="送出" barSize={15} />
-                  <Bar dataKey="receive" fill="#10b981" radius={[0, 4, 4, 0]} name="收到" barSize={15} />
+                  <Bar dataKey="give" fill="#10b981" radius={[0, 4, 4, 0]} name="送出" barSize={15} />
+                  <Bar dataKey="receive" fill="#ef4444" radius={[0, 4, 4, 0]} name="收到" barSize={15} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -250,7 +249,6 @@ const Analytics: React.FC<AnalyticsProps> = ({ state }) => {
                   <XAxis 
                     dataKey="name" 
                     tickFormatter={(v) => {
-                      // v is 'YYYY-MM'
                       if (!v) return v;
                       const parts = v.split('-');
                       if (parts.length === 2) {
@@ -262,8 +260,8 @@ const Analytics: React.FC<AnalyticsProps> = ({ state }) => {
                   />
                   <YAxis hide />
                   <Tooltip />
-                  <Bar dataKey="give" fill="#ef4444" radius={[4, 4, 0, 0]} name="送出" />
-                  <Bar dataKey="receive" fill="#10b981" radius={[4, 4, 0, 0]} name="收到" />
+                  <Bar dataKey="give" fill="#10b981" radius={[4, 4, 0, 0]} name="送出" />
+                  <Bar dataKey="receive" fill="#ef4444" radius={[4, 4, 0, 0]} name="收到" />
                 </BarChart>
               </ResponsiveContainer>
             </div>

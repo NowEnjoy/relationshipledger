@@ -35,9 +35,9 @@ const PersonDetail: React.FC<PersonDetailProps> = ({ person, transactions, onBac
            <div>
              <p className="text-slate-400 text-sm mb-1">净值 (Net Balance)</p>
              <div className="text-3xl font-bold flex items-baseline">
-                {CURRENCY_SYMBOL} {Math.abs(person.balance).toLocaleString()}
-                <span className={`ml-2 text-sm font-medium px-2 py-0.5 rounded-full ${person.balance >= 0 ? 'bg-red-500/20 text-red-300' : 'bg-emerald-500/20 text-emerald-300'}`}>
-                  {person.balance >= 0 ? '送出去' : '收进来'}
+                {person.balance < 0 ? '-' : ''}{CURRENCY_SYMBOL} {Math.abs(person.balance).toLocaleString()}
+                <span className={`ml-2 text-[10px] font-bold px-2 py-0.5 rounded-full tracking-wider ${person.balance >= 0 ? 'bg-receive/20 text-receive' : 'bg-give/20 text-give'}`}>
+                  {person.balance >= 0 ? '结余 (Surplus)' : '赤字 (Deficit)'}
                 </span>
              </div>
            </div>
@@ -48,11 +48,11 @@ const PersonDetail: React.FC<PersonDetailProps> = ({ person, transactions, onBac
 
          <div className="grid grid-cols-2 gap-4">
             <div className="bg-white/10 rounded-2xl p-3 backdrop-blur-sm">
-              <span className="text-xs text-red-300 block mb-1">Total Given</span>
+              <span className="text-xs text-give block mb-1">Total Given</span>
               <span className="text-lg font-bold">{CURRENCY_SYMBOL}{person.totalGiven}</span>
             </div>
             <div className="bg-white/10 rounded-2xl p-3 backdrop-blur-sm">
-              <span className="text-xs text-emerald-300 block mb-1">Total Received</span>
+              <span className="text-xs text-receive block mb-1">Total Received</span>
               <span className="text-lg font-bold">{CURRENCY_SYMBOL}{person.totalReceived}</span>
             </div>
          </div>
@@ -88,7 +88,7 @@ const PersonDetail: React.FC<PersonDetailProps> = ({ person, transactions, onBac
                 <div className="p-4 flex justify-between items-center">
                     <div className="flex items-center space-x-4">
                         <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                            tx.type === TransactionType.GIVE ? 'bg-red-100 text-red-500' : 'bg-emerald-100 text-emerald-500'
+                            tx.type === TransactionType.GIVE ? 'bg-give/10 text-give' : 'bg-receive/10 text-receive'
                         }`}>
                             {tx.type === TransactionType.GIVE ? <ArrowUpRight size={18} /> : <ArrowDownLeft size={18} />}
                         </div>

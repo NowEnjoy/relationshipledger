@@ -177,8 +177,8 @@ const TransactionForm: React.FC<TransactionFormProps> = ({ people, initialData, 
                   placeholder="0.00"
                   className={`w-full pl-10 pr-4 py-3 rounded-xl border-2 bg-transparent text-xl font-bold outline-none focus:ring-0 ${
                     type === TransactionType.GIVE 
-                      ? 'border-red-100 focus:border-red-500 text-red-600' 
-                      : 'border-emerald-100 focus:border-emerald-500 text-emerald-600'
+                      ? 'border-emerald-100 focus:border-give text-give' 
+                      : 'border-red-100 focus:border-receive text-receive'
                   }`}
                   required
                 />
@@ -350,7 +350,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({ people, initialData, 
             <button
               type="submit"
               className={`flex-1 py-4 rounded-xl font-bold text-white shadow-lg transform active:scale-95 transition-all ${
-                type === TransactionType.GIVE ? 'bg-give shadow-red-200' : 'bg-receive shadow-emerald-200'
+                type === TransactionType.GIVE ? 'bg-give shadow-emerald-200' : 'bg-receive shadow-red-200'
               }`}
             >
               {initialData ? '保存修改 (Update)' : '保存 (Save)'}

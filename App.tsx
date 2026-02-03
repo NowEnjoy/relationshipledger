@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { AppState, Person, Transaction } from './types';
 import { loadData, saveData, addTransaction, updateTransaction, deleteTransaction, exportDataJSON, exportDataCSV, importDataJSON, clearAllData } from './services/storageService';
@@ -226,9 +227,9 @@ function App() {
         </button>
       </div>
 
-      <div className="p-4 text-xs text-slate-400 bg-slate-50 dark:bg-slate-900 rounded-xl">
-        <p className="mb-2 font-bold">隐私声明 (Privacy):</p>
-        <p>数据仅存储在您的设备本地，已移除加密以便于您导出查看。请通过“导出备份”功能定期保存数据。</p>
+      <div className="p-4 text-xs text-slate-400 bg-slate-50 dark:bg-slate-900 rounded-xl leading-relaxed">
+        <p className="mb-2 font-bold text-slate-500 dark:text-slate-300">隐私声明 (Privacy Policy):</p>
+        <p>数据安全与隐私至关重要。您的所有账本记录完全存储在设备本地，绝不进行云端传输或信息收集。由于数据不存储于服务器，请务必通过“导出备份”功能定期保存数据文件，以防设备损坏、丢失或应用卸载导致数据无法找回。</p>
       </div>
 
       {/* Copyright Footer */}

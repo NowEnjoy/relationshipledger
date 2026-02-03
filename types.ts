@@ -1,3 +1,4 @@
+
 export enum TransactionType {
   GIVE = 'GIVE',
   RECEIVE = 'RECEIVE'
@@ -24,7 +25,7 @@ export interface Person {
   totalGiven: number;
   totalReceived: number;
   lastInteraction: string; // ISO Date
-  balance: number; // Positive means you gave more (they owe you favors), negative means you received more
+  balance: number; // Positive means you received more, negative means you gave more (net cash flow)
 }
 
 export interface Transaction {
