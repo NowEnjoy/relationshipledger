@@ -230,6 +230,12 @@ function App() {
         <p className="mb-2 font-bold">隐私声明 (Privacy):</p>
         <p>数据仅存储在您的设备本地，已移除加密以便于您导出查看。请通过“导出备份”功能定期保存数据。</p>
       </div>
+
+      {/* Copyright Footer */}
+      <div className="text-center py-6 text-slate-300 dark:text-slate-700">
+        <p className="text-xs font-medium">Relationship Ledger</p>
+        <p className="text-[10px] mt-1">Designed by FF &copy; {new Date().getFullYear()}</p>
+      </div>
     </div>
   );
 
