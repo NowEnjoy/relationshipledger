@@ -1,90 +1,125 @@
-<!DOCTYPE html>
-<html lang="zh-CN" class="h-full">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-    <title>Relationship Ledger</title>
-    
-    <!-- PWA Settings for iOS -->
-    <link rel="manifest" href="/manifest.json">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="人情账本">
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/1055/1055644.png">
-    
-    <!-- Using Tailwind via PostCSS/Vite now, not CDN for better performance and offline support -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        darkMode: 'media', 
-        theme: {
-          extend: {
-            colors: {
-              give: '#ef4444', // Red-500
-              receive: '#10b981', // Emerald-500
-              primary: '#3b82f6', // Blue-500
-              background: '#f8fafc',
-              surface: '#ffffff',
-            },
-            fontFamily: {
-              sans: ['Inter', 'system-ui', 'sans-serif'],
-            },
-            spacing: {
-              'safe-top': 'env(safe-area-inset-top)',
-              'safe-bottom': 'env(safe-area-inset-bottom)',
-              'safe-left': 'env(safe-area-inset-left)',
-              'safe-right': 'env(safe-area-inset-right)',
-            }
-          },
-        },
-      }
-    </script>
-    <style>
-      html, body {
-        height: 100%;
-        overflow: hidden; /* Prevent body scroll, handle in app */
-      }
-      body {
-        background-color: #f8fafc;
-        -webkit-tap-highlight-color: transparent;
-        overscroll-behavior-y: none; /* Prevent bounce effect on iOS */
-      }
-      @media (prefers-color-scheme: dark) {
-        body {
-          background-color: #0f172a;
-        }
-      }
-      /* Hide scrollbar for clean mobile look */
-      .no-scrollbar::-webkit-scrollbar {
-        display: none;
-      }
-      .no-scrollbar {
-        -ms-overflow-style: none;
-        scrollbar-width: none;
-      }
-      #root {
-        height: 100%;
-        overflow-y: auto;
-        -webkit-overflow-scrolling: touch;
-      }
-    </style>
-  <script type="importmap">
-{
-  "imports": {
-    "react": "https://esm.sh/react@^19.2.4",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
-    "react/": "https://esm.sh/react@^19.2.4/",
-    "lucide-react": "https://esm.sh/lucide-react@^0.563.0",
-    "recharts": "https://esm.sh/recharts@^3.7.0",
-    "vite": "https://esm.sh/vite@^7.3.1",
-    "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.2"
-  }
-}
-</script>
-<link rel="stylesheet" href="/index.css">
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2487.7">
+  <style type="text/css">
+    body {background-color: #f6f9fb}
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Menlo; color: #6d6d6d; -webkit-text-stroke: #6d6d6d}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Menlo; color: #0000ff; -webkit-text-stroke: #0000ff}
+    p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Menlo; color: #6b0001; -webkit-text-stroke: #6b0001}
+    p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Menlo; color: #fb0007; -webkit-text-stroke: #fb0007}
+    p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Menlo; -webkit-text-stroke: #000000}
+    p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Menlo; -webkit-text-stroke: #000000; min-height: 14.0px}
+    p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Menlo; color: #0f7001; -webkit-text-stroke: #0f7001}
+    p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Menlo; color: #900112; -webkit-text-stroke: #900112}
+    p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px 'Songti SC'; -webkit-text-stroke: #000000; min-height: 17.0px}
+    span.s1 {font-kerning: none; background-color: #fffffe}
+    span.s2 {font-kerning: none; color: #fb0007; background-color: #fffffe; -webkit-text-stroke: 0px #fb0007}
+    span.s3 {font-kerning: none; color: #2a2a2a; background-color: #fffffe; -webkit-text-stroke: 0px #2a2a2a}
+    span.s4 {font-kerning: none; color: #6b0001; background-color: #fffffe; -webkit-text-stroke: 0px #6b0001}
+    span.s5 {font-kerning: none; color: #000000; background-color: #fffffe; -webkit-text-stroke: 0px #000000}
+    span.s6 {font-kerning: none; color: #0000ff; background-color: #fffffe; -webkit-text-stroke: 0px #0000ff}
+    span.s7 {font-kerning: none; color: #900112; background-color: #fffffe; -webkit-text-stroke: 0px #900112}
+    span.s8 {font-kerning: none; color: #0f7001; background-color: #fffffe; -webkit-text-stroke: 0px #0f7001}
+    span.s9 {font-kerning: none; color: #137646; background-color: #fffffe; -webkit-text-stroke: 0px #137646}
+    span.s10 {font-kerning: none; color: #093c94; background-color: #fffffe; -webkit-text-stroke: 0px #093c94}
+    span.s11 {font-kerning: none}
+  </style>
 </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/index.tsx"></script>
-  </body>
+<body>
+<p class="p1"><span class="s1">&lt;!DOCTYPE</span><span class="s2"> html</span><span class="s1">&gt;</span></p>
+<p class="p2"><span class="s3">&lt;</span><span class="s4">html</span><span class="s5"> </span><span class="s2">lang</span><span class="s3">=</span><span class="s1">"zh-CN"</span><span class="s5"> </span><span class="s2">class</span><span class="s3">=</span><span class="s1">"h-full"</span><span class="s3">&gt;</span></p>
+<p class="p3"><span class="s5"><span class="Apple-converted-space">  </span></span><span class="s3">&lt;</span><span class="s1">head</span><span class="s3">&gt;</span></p>
+<p class="p4"><span class="s5"><span class="Apple-converted-space">    </span></span><span class="s3">&lt;</span><span class="s4">meta</span><span class="s5"> </span><span class="s1">charset</span><span class="s3">=</span><span class="s6">"UTF-8"</span><span class="s5"> </span><span class="s3">/&gt;</span></p>
+<p class="p2"><span class="s5"><span class="Apple-converted-space">    </span></span><span class="s3">&lt;</span><span class="s4">meta</span><span class="s5"> </span><span class="s2">name</span><span class="s3">=</span><span class="s1">"viewport"</span><span class="s5"> </span><span class="s2">content</span><span class="s3">=</span><span class="s1">"width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"</span><span class="s5"> </span><span class="s3">/&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">    </span></span><span class="s3">&lt;</span><span class="s4">title</span><span class="s3">&gt;</span><span class="s1">Relationship Ledger</span><span class="s3">&lt;/</span><span class="s4">title</span><span class="s3">&gt;</span></p>
+<p class="p6"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p7"><span class="s5"><span class="Apple-converted-space">    </span></span><span class="s1">&lt;!-- PWA Settings for iOS --&gt;</span></p>
+<p class="p2"><span class="s5"><span class="Apple-converted-space">    </span></span><span class="s3">&lt;</span><span class="s4">link</span><span class="s5"> </span><span class="s2">rel</span><span class="s3">=</span><span class="s1">"manifest"</span><span class="s5"> </span><span class="s2">href</span><span class="s3">=</span><span class="s1">"/manifest.json"</span><span class="s3">&gt;</span></p>
+<p class="p2"><span class="s5"><span class="Apple-converted-space">    </span></span><span class="s3">&lt;</span><span class="s4">meta</span><span class="s5"> </span><span class="s2">name</span><span class="s3">=</span><span class="s1">"apple-mobile-web-app-capable"</span><span class="s5"> </span><span class="s2">content</span><span class="s3">=</span><span class="s1">"yes"</span><span class="s3">&gt;</span></p>
+<p class="p2"><span class="s5"><span class="Apple-converted-space">    </span></span><span class="s3">&lt;</span><span class="s4">meta</span><span class="s5"> </span><span class="s2">name</span><span class="s3">=</span><span class="s1">"apple-mobile-web-app-status-bar-style"</span><span class="s5"> </span><span class="s2">content</span><span class="s3">=</span><span class="s1">"black-translucent"</span><span class="s3">&gt;</span></p>
+<p class="p2"><span class="s5"><span class="Apple-converted-space">    </span></span><span class="s3">&lt;</span><span class="s4">meta</span><span class="s5"> </span><span class="s2">name</span><span class="s3">=</span><span class="s1">"apple-mobile-web-app-title"</span><span class="s5"> </span><span class="s2">content</span><span class="s3">=</span><span class="s1">"人情账本"</span><span class="s3">&gt;</span></p>
+<p class="p2"><span class="s5"><span class="Apple-converted-space">    </span></span><span class="s3">&lt;</span><span class="s4">link</span><span class="s5"> </span><span class="s2">rel</span><span class="s3">=</span><span class="s1">"apple-touch-icon"</span><span class="s5"> </span><span class="s2">href</span><span class="s3">=</span><span class="s1">"https://cdn-icons-png.flaticon.com/512/1055/1055644.png"</span><span class="s3">&gt;</span></p>
+<p class="p6"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p7"><span class="s5"><span class="Apple-converted-space">    </span></span><span class="s1">&lt;!-- Using Tailwind via PostCSS/Vite now, not CDN for better performance and offline support --&gt;</span></p>
+<p class="p2"><span class="s5"><span class="Apple-converted-space">    </span></span><span class="s3">&lt;</span><span class="s4">script</span><span class="s5"> </span><span class="s2">src</span><span class="s3">=</span><span class="s1">"https://cdn.tailwindcss.com"</span><span class="s3">&gt;&lt;/</span><span class="s4">script</span><span class="s3">&gt;</span></p>
+<p class="p3"><span class="s5"><span class="Apple-converted-space">    </span></span><span class="s3">&lt;</span><span class="s1">script</span><span class="s3">&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">      </span>tailwind.config = {</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">        </span>darkMode: </span><span class="s7">'media'</span><span class="s1">,<span class="Apple-converted-space"> </span></span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">        </span>theme: {</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">          </span>extend: {</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>colors: {</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">              </span>give: </span><span class="s7">'#ef4444'</span><span class="s1">, </span><span class="s8">// Red-500</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">              </span>receive: </span><span class="s7">'#10b981'</span><span class="s1">, </span><span class="s8">// Emerald-500</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">              </span>primary: </span><span class="s7">'#3b82f6'</span><span class="s1">, </span><span class="s8">// Blue-500</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">              </span>background: </span><span class="s7">'#f8fafc'</span><span class="s1">,</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">              </span>surface: </span><span class="s7">'#ffffff'</span><span class="s1">,</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>},</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>fontFamily: {</span></p>
+<p class="p8"><span class="s5"><span class="Apple-converted-space">              </span>sans: [</span><span class="s1">'Inter'</span><span class="s5">, </span><span class="s1">'system-ui'</span><span class="s5">, </span><span class="s1">'sans-serif'</span><span class="s5">],</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>},</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>spacing: {</span></p>
+<p class="p8"><span class="s5"><span class="Apple-converted-space">              </span></span><span class="s1">'safe-top'</span><span class="s5">: </span><span class="s1">'env(safe-area-inset-top)'</span><span class="s5">,</span></p>
+<p class="p8"><span class="s5"><span class="Apple-converted-space">              </span></span><span class="s1">'safe-bottom'</span><span class="s5">: </span><span class="s1">'env(safe-area-inset-bottom)'</span><span class="s5">,</span></p>
+<p class="p8"><span class="s5"><span class="Apple-converted-space">              </span></span><span class="s1">'safe-left'</span><span class="s5">: </span><span class="s1">'env(safe-area-inset-left)'</span><span class="s5">,</span></p>
+<p class="p8"><span class="s5"><span class="Apple-converted-space">              </span></span><span class="s1">'safe-right'</span><span class="s5">: </span><span class="s1">'env(safe-area-inset-right)'</span><span class="s5">,</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>}</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">          </span>},</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">        </span>},</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">      </span>}</span></p>
+<p class="p3"><span class="s5"><span class="Apple-converted-space">    </span></span><span class="s3">&lt;/</span><span class="s1">script</span><span class="s3">&gt;</span></p>
+<p class="p3"><span class="s5"><span class="Apple-converted-space">    </span></span><span class="s3">&lt;</span><span class="s1">style</span><span class="s3">&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">      </span></span><span class="s4">html</span><span class="s1">, </span><span class="s4">body</span><span class="s1"> {</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">        </span></span><span class="s2">height:</span><span class="s1"> </span><span class="s9">100%</span><span class="s1">;</span></p>
+<p class="p7"><span class="s5"><span class="Apple-converted-space">        </span></span><span class="s2">overflow:</span><span class="s5"> </span><span class="s10">hidden</span><span class="s5">; </span><span class="s1">/* Prevent body scroll, handle in app */</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">      </span>}</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">      </span></span><span class="s4">body</span><span class="s1"> {</span></p>
+<p class="p4"><span class="s5"><span class="Apple-converted-space">        </span></span><span class="s1">background-color:</span><span class="s5"> </span><span class="s10">#f8fafc</span><span class="s5">;</span></p>
+<p class="p4"><span class="s5"><span class="Apple-converted-space">        </span></span><span class="s1">-webkit-tap-highlight-color:</span><span class="s5"> </span><span class="s10">transparent</span><span class="s5">;</span></p>
+<p class="p7"><span class="s5"><span class="Apple-converted-space">        </span></span><span class="s2">overscroll-behavior-y:</span><span class="s5"> </span><span class="s10">none</span><span class="s5">; </span><span class="s1">/* Prevent bounce effect on iOS */</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">      </span>}</span></p>
+<p class="p3"><span class="s5"><span class="Apple-converted-space">      </span>@</span><span class="s1">media</span><span class="s5"> (</span><span class="s1">prefers-color-scheme:</span><span class="s5"> </span><span class="s1">dark</span><span class="s5">) {</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">        </span>body {</span></p>
+<p class="p4"><span class="s5"><span class="Apple-converted-space">          </span></span><span class="s1">background-color:</span><span class="s5"> </span><span class="s10">#0f172a</span><span class="s5">;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">      </span>}</span></p>
+<p class="p7"><span class="s5"><span class="Apple-converted-space">      </span></span><span class="s1">/* Hide scrollbar for clean mobile look */</span></p>
+<p class="p3"><span class="s5"><span class="Apple-converted-space">      </span></span><span class="s1">.no-scrollbar::-webkit-scrollbar</span><span class="s5"> {</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">        </span></span><span class="s2">display:</span><span class="s1"> </span><span class="s10">none</span><span class="s1">;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">      </span>}</span></p>
+<p class="p3"><span class="s5"><span class="Apple-converted-space">      </span></span><span class="s1">.no-scrollbar</span><span class="s5"> {</span></p>
+<p class="p4"><span class="s5"><span class="Apple-converted-space">        </span></span><span class="s1">-ms-overflow-style:</span><span class="s5"> </span><span class="s10">none</span><span class="s5">;</span></p>
+<p class="p4"><span class="s5"><span class="Apple-converted-space">        </span></span><span class="s1">scrollbar-width:</span><span class="s5"> </span><span class="s10">none</span><span class="s5">;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">      </span>}</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">      </span></span><span class="s4">#root</span><span class="s1"> {</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">        </span></span><span class="s2">height:</span><span class="s1"> </span><span class="s9">100%</span><span class="s1">;</span></p>
+<p class="p4"><span class="s5"><span class="Apple-converted-space">        </span></span><span class="s1">overflow-y:</span><span class="s5"> </span><span class="s10">auto</span><span class="s5">;</span></p>
+<p class="p4"><span class="s5"><span class="Apple-converted-space">        </span></span><span class="s1">-webkit-overflow-scrolling:</span><span class="s5"> </span><span class="s10">touch</span><span class="s5">;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">      </span>}</span></p>
+<p class="p3"><span class="s5"><span class="Apple-converted-space">    </span></span><span class="s3">&lt;/</span><span class="s1">style</span><span class="s3">&gt;</span></p>
+<p class="p2"><span class="s5"><span class="Apple-converted-space">  </span></span><span class="s3">&lt;</span><span class="s4">script</span><span class="s5"> </span><span class="s2">type</span><span class="s3">=</span><span class="s1">"importmap"</span><span class="s3">&gt;</span></p>
+<p class="p5"><span class="s1">{</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">  </span>"imports": {</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">    </span>"react": "https://esm.sh/react@^18.3.1",</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">    </span>"react-dom/": "https://esm.sh/react-dom@^18.3.1/",</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">    </span>"react/": "https://esm.sh/react@^18.3.1/",</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">    </span>"lucide-react": "https://esm.sh/lucide-react@^0.344.0",</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">    </span>"recharts": "https://esm.sh/recharts@^2.12.2",</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">    </span>"vite": "https://esm.sh/vite@^5.1.4",</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">    </span>"@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^4.2.1"</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">  </span>}</span></p>
+<p class="p5"><span class="s1">}</span></p>
+<p class="p3"><span class="s3">&lt;/</span><span class="s1">script</span><span class="s3">&gt;</span></p>
+<p class="p3"><span class="s3">&lt;/</span><span class="s1">head</span><span class="s3">&gt;</span></p>
+<p class="p3"><span class="s5"><span class="Apple-converted-space">  </span></span><span class="s3">&lt;</span><span class="s1">body</span><span class="s3">&gt;</span></p>
+<p class="p2"><span class="s5"><span class="Apple-converted-space">    </span></span><span class="s3">&lt;</span><span class="s4">div</span><span class="s5"> </span><span class="s2">id</span><span class="s3">=</span><span class="s1">"root"</span><span class="s3">&gt;&lt;/</span><span class="s4">div</span><span class="s3">&gt;</span></p>
+<p class="p2"><span class="s5"><span class="Apple-converted-space">    </span></span><span class="s3">&lt;</span><span class="s4">script</span><span class="s5"> </span><span class="s2">type</span><span class="s3">=</span><span class="s1">"module"</span><span class="s5"> </span><span class="s2">src</span><span class="s3">=</span><span class="s1">"/index.tsx"</span><span class="s3">&gt;&lt;/</span><span class="s4">script</span><span class="s3">&gt;</span></p>
+<p class="p3"><span class="s5"><span class="Apple-converted-space">  </span></span><span class="s3">&lt;/</span><span class="s1">body</span><span class="s3">&gt;</span></p>
+<p class="p3"><span class="s3">&lt;/</span><span class="s1">html</span><span class="s3">&gt;</span></p>
+<p class="p9"><span class="s11"></span><br></p>
+</body>
 </html>
