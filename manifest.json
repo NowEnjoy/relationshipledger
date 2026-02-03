@@ -1,7 +1,8 @@
 {
   "name": "人情账本",
   "short_name": "人情账本",
-  "start_url": "/",
+  "start_url": "/relationshipledger/",
+  "scope": "/relationshipledger/",
   "display": "standalone",
   "background_color": "#f8fafc",
   "theme_color": "#3b82f6",

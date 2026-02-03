@@ -1,4 +1,4 @@
-const CACHE_NAME = 'relationship-ledger-v2';
+const CACHE_NAME = 'relationship-ledger-v3';
 
 // In development, we don't hardcode filenames because Vite generates them with hashes.
 // The browser will naturally cache visited resources. 
@@ -7,9 +7,9 @@ const CACHE_NAME = 'relationship-ledger-v2';
 // However, for this simple offline setup, we will cache the app shell.
 
 const URLS_TO_CACHE = [
-  '/',
-  '/index.html',
-  '/manifest.json'
+  './',
+  './index.html',
+  './manifest.json'
 ];
 
 self.addEventListener('install', (event) => {
@@ -33,7 +33,8 @@ self.addEventListener('fetch', (event) => {
             .then(response => {
               if (response) return response;
               // If not found in cache and network fails, return the index page (SPA fallback)
-              return caches.match('/'); 
+              // We try to match './' or the request url itself
+              return caches.match('./') || caches.match(event.request); 
             });
         })
     );
