@@ -243,38 +243,41 @@ const TransactionForm: React.FC<TransactionFormProps> = ({ people, initialData, 
               </div>
             </div>
 
-            {/* Tags */}
+            {/* Tags - Reverted to Simple Toggle */}
             <div>
-              <label className="text-xs text-slate-500 mb-1 block">标签 (Tags)</label>
+              <label className="text-xs text-slate-500 mb-2 block">标签 (Tags)</label>
               <div className="flex flex-wrap gap-2 pb-1">
+                {/* Standard Tags */}
                 {TAG_OPTIONS.map(tag => (
                   <button
                     key={tag}
                     type="button"
                     onClick={() => toggleTag(tag)}
-                    className={`px-3 py-1.5 rounded-lg text-sm font-medium border transition-colors ${
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all duration-200 ${
                       selectedTags.includes(tag)
-                        ? 'bg-blue-500 text-white border-blue-500'
-                        : 'bg-transparent text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700'
+                        ? 'bg-blue-500 text-white border-blue-500 shadow-sm'
+                        : 'border-slate-200 dark:border-slate-700 text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800'
                     }`}
                   >
                     {tag}
                   </button>
                 ))}
-                
+
+                {/* Custom Tags (Rendered if selected but not in standard options) */}
                 {selectedTags.filter(t => !TAG_OPTIONS.includes(t)).map(tag => (
-                  <button
+                   <button
                     key={tag}
                     type="button"
                     onClick={() => toggleTag(tag)}
-                    className="px-3 py-1.5 rounded-lg text-sm font-medium border bg-blue-500 text-white border-blue-500"
+                    className="px-3 py-1.5 rounded-lg text-xs font-bold border bg-blue-500 text-white border-blue-500 shadow-sm"
                   >
                     {tag}
                   </button>
                 ))}
-
+                
+                {/* Add Custom Tag */}
                 {isAddingTag ? (
-                  <div className="flex items-center space-x-2">
+                  <div className="flex items-center">
                     <input 
                       autoFocus
                       type="text"
@@ -282,15 +285,15 @@ const TransactionForm: React.FC<TransactionFormProps> = ({ people, initialData, 
                       onChange={(e) => setNewTagInput(e.target.value)}
                       onBlur={handleAddCustomTag}
                       onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddCustomTag())}
-                      className="w-24 px-2 py-1.5 text-sm rounded-lg border border-blue-500 bg-transparent outline-none"
-                      placeholder="New Tag"
+                      className="w-20 px-2 py-1.5 text-xs rounded-lg border border-blue-500 bg-transparent outline-none"
+                      placeholder="Tag..."
                     />
                   </div>
                 ) : (
                   <button
                     type="button"
                     onClick={() => setIsAddingTag(true)}
-                    className="px-3 py-1.5 rounded-lg text-sm font-medium border border-dashed border-slate-300 dark:border-slate-600 text-slate-400 flex items-center"
+                    className="px-3 py-1.5 rounded-lg text-xs font-medium border border-dashed border-slate-300 dark:border-slate-600 text-slate-400 flex items-center hover:border-slate-400 dark:hover:border-slate-500 transition-colors"
                   >
                     <Plus size={14} className="mr-1" /> Add
                   </button>
@@ -313,7 +316,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({ people, initialData, 
                </div>
             </div>
 
-            {/* Delete Section - Moved to bottom of scroll area */}
+            {/* Delete Section */}
             {initialData && (
                <div className="pt-6 pb-2">
                  <button
