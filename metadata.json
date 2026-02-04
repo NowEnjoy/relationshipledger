@@ -1,5 +1,6 @@
+
 {
-  "name": "人情账本（Relationship Ledger）",
-  "description": "An offline-first, privacy-focused application to track personal relationship exchanges, gifts, and favors. Features local storage, analytics, and a minimalist design.",
+  "name": "人情账本 Pro",
+  "description": "人情账本 Pro：隐私第一的社交资产专家。数据本地存储，随礼回礼极简记录。多维统计往来趋势，深度管理人脉，让人情更有数。",
   "requestFramePermissions": []
 }

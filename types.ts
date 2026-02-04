@@ -6,9 +6,7 @@ export enum TransactionType {
 
 export enum Occasion {
   BIRTHDAY = '生日',
-  BIRTHDAY_BANQUET = '生日宴',
   FULL_MOON = '满月宴',
-  FIRST_BIRTHDAY = '周岁宴',
   WEDDING = '婚礼',
   HOUSEWARMING = '乔迁新房',
   ACADEMIC = '升学宴',

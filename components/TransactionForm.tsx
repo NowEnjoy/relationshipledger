@@ -1,7 +1,9 @@
+
 import React, { useState, useEffect } from 'react';
 import { TransactionType, Person, Occasion, Transaction } from '../types';
-import { OCCASION_OPTIONS, TAG_OPTIONS } from '../constants';
-import { X, Calendar, User, AlignLeft, DollarSign, Trash2, Plus, AlertCircle } from 'lucide-react';
+import { OCCASION_OPTIONS } from '../constants';
+import { loadTags, addTagToLibrary, removeTagFromLibrary } from '../services/storageService';
+import { X, Calendar, User, AlignLeft, DollarSign, Trash2, Plus, AlertCircle, MinusCircle } from 'lucide-react';
 
 interface TransactionFormProps {
   people: Person[];
@@ -20,7 +22,8 @@ const TransactionForm: React.FC<TransactionFormProps> = ({ people, initialData, 
   const [notes, setNotes] = useState('');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   
-  // Custom Tag State
+  // Tag Library State
+  const [tagLibrary, setTagLibrary] = useState<string[]>([]);
   const [newTagInput, setNewTagInput] = useState('');
   const [isAddingTag, setIsAddingTag] = useState(false);
   
@@ -31,6 +34,9 @@ const TransactionForm: React.FC<TransactionFormProps> = ({ people, initialData, 
   const [confirmDelete, setConfirmDelete] = useState(false);
 
   useEffect(() => {
+    // Load library
+    setTagLibrary(loadTags());
+
     if (initialData) {
       setType(initialData.type);
       setPersonName(initialData.personName);
@@ -59,7 +65,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({ people, initialData, 
     if (!personName || !amount) return;
 
     const existingPerson = people.find(p => p.name === personName);
-    let personId = Date.now().toString(); // Fallback ID
+    let personId = Date.now().toString(); 
     
     if (existingPerson) {
         personId = existingPerson.id;
@@ -77,20 +83,19 @@ const TransactionForm: React.FC<TransactionFormProps> = ({ people, initialData, 
       occasion,
       notes,
       tags: selectedTags,
-      createdAt: initialData?.createdAt // Preserve creation date
+      createdAt: initialData?.createdAt 
     });
     onClose();
   };
 
   const handleDeleteClick = (e: React.MouseEvent) => {
-    e.preventDefault(); // Prevent form submission
+    e.preventDefault();
     if (initialData && initialData.id) {
         if (confirmDelete) {
             onDelete(initialData.id);
             onClose();
         } else {
             setConfirmDelete(true);
-            // Auto reset confirmation after 3 seconds
             setTimeout(() => setConfirmDelete(false), 3000);
         }
     }
@@ -110,8 +115,10 @@ const TransactionForm: React.FC<TransactionFormProps> = ({ people, initialData, 
   };
 
   const handleAddCustomTag = () => {
-    if (newTagInput.trim()) {
-      const tag = newTagInput.trim();
+    const tag = newTagInput.trim();
+    if (tag) {
+      const updatedLib = addTagToLibrary(tag);
+      setTagLibrary(updatedLib);
       if (!selectedTags.includes(tag)) {
         setSelectedTags([...selectedTags, tag]);
       }
@@ -120,11 +127,18 @@ const TransactionForm: React.FC<TransactionFormProps> = ({ people, initialData, 
     }
   };
 
+  const handleDeleteTagFromLibrary = (e: React.MouseEvent, tag: string) => {
+    e.stopPropagation();
+    const updatedLib = removeTagFromLibrary(tag);
+    setTagLibrary(updatedLib);
+    // Also deselect if it was selected
+    setSelectedTags(selectedTags.filter(t => t !== tag));
+  };
+
   return (
     <div className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 backdrop-blur-sm animate-in fade-in duration-200">
       <div className="bg-white dark:bg-slate-900 w-full max-w-lg rounded-t-2xl sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col h-[90vh] sm:h-auto sm:max-h-[90vh] animate-in slide-in-from-bottom-10 duration-300">
         
-        {/* Header - Fixed */}
         <div className="flex justify-between items-center p-4 border-b dark:border-slate-800 flex-shrink-0">
           <h2 className="text-lg font-bold text-slate-800 dark:text-white">
             {initialData ? '修改记录 (Edit)' : '记一笔 (New)'}
@@ -134,7 +148,6 @@ const TransactionForm: React.FC<TransactionFormProps> = ({ people, initialData, 
           </button>
         </div>
 
-        {/* Scrollable Content Form */}
         <form onSubmit={handleSubmit} className="flex flex-col flex-1 overflow-hidden">
           
           <div className="flex-1 overflow-y-auto p-4 space-y-5 no-scrollbar pb-10">
@@ -185,7 +198,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({ people, initialData, 
               </div>
             </div>
 
-            {/* Person Auto-complete */}
+            {/* Person */}
             <div className="relative z-10">
               <label className="text-xs text-slate-500 mb-1 block">往来对象 (Person)</label>
               <div className="relative">
@@ -243,36 +256,39 @@ const TransactionForm: React.FC<TransactionFormProps> = ({ people, initialData, 
               </div>
             </div>
 
-            {/* Tags - Reverted to Simple Toggle */}
+            {/* Tags Section */}
             <div>
               <label className="text-xs text-slate-500 mb-2 block">标签 (Tags)</label>
               <div className="flex flex-wrap gap-2 pb-1">
-                {/* Standard Tags */}
-                {TAG_OPTIONS.map(tag => (
-                  <button
+                {/* Library Tags */}
+                {tagLibrary.map(tag => (
+                  <div
                     key={tag}
-                    type="button"
                     onClick={() => toggleTag(tag)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all duration-200 ${
+                    className={`group relative px-3 py-1.5 rounded-lg text-xs font-bold border transition-all duration-200 cursor-pointer flex items-center gap-1.5 ${
                       selectedTags.includes(tag)
                         ? 'bg-blue-500 text-white border-blue-500 shadow-sm'
                         : 'border-slate-200 dark:border-slate-700 text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800'
                     }`}
                   >
-                    {tag}
-                  </button>
+                    <span>{tag}</span>
+                    <MinusCircle 
+                        size={14} 
+                        className={`opacity-0 group-hover:opacity-100 transition-opacity hover:text-red-300 ${selectedTags.includes(tag) ? 'text-blue-200' : 'text-slate-400'}`}
+                        onClick={(e) => handleDeleteTagFromLibrary(e, tag)}
+                    />
+                  </div>
                 ))}
 
-                {/* Custom Tags (Rendered if selected but not in standard options) */}
-                {selectedTags.filter(t => !TAG_OPTIONS.includes(t)).map(tag => (
-                   <button
+                {/* Tags from transaction that are not in library (Edge case: old data) */}
+                {selectedTags.filter(t => !tagLibrary.includes(t)).map(tag => (
+                   <div
                     key={tag}
-                    type="button"
                     onClick={() => toggleTag(tag)}
-                    className="px-3 py-1.5 rounded-lg text-xs font-bold border bg-blue-500 text-white border-blue-500 shadow-sm"
+                    className="px-3 py-1.5 rounded-lg text-xs font-bold border bg-blue-500 text-white border-blue-500 shadow-sm cursor-pointer"
                   >
                     {tag}
-                  </button>
+                  </div>
                 ))}
                 
                 {/* Add Custom Tag */}
@@ -285,8 +301,8 @@ const TransactionForm: React.FC<TransactionFormProps> = ({ people, initialData, 
                       onChange={(e) => setNewTagInput(e.target.value)}
                       onBlur={handleAddCustomTag}
                       onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddCustomTag())}
-                      className="w-20 px-2 py-1.5 text-xs rounded-lg border border-blue-500 bg-transparent outline-none"
-                      placeholder="Tag..."
+                      className="w-24 px-2 py-1.5 text-xs rounded-lg border border-blue-500 bg-transparent outline-none text-slate-800 dark:text-white"
+                      placeholder="回车新增..."
                     />
                   </div>
                 ) : (
@@ -295,10 +311,11 @@ const TransactionForm: React.FC<TransactionFormProps> = ({ people, initialData, 
                     onClick={() => setIsAddingTag(true)}
                     className="px-3 py-1.5 rounded-lg text-xs font-medium border border-dashed border-slate-300 dark:border-slate-600 text-slate-400 flex items-center hover:border-slate-400 dark:hover:border-slate-500 transition-colors"
                   >
-                    <Plus size={14} className="mr-1" /> Add
+                    <Plus size={14} className="mr-1" /> 新增标签
                   </button>
                 )}
               </div>
+              {tagLibrary.length > 0 && <p className="text-[10px] text-slate-400 mt-2">提示：点击标签可选择，鼠标悬停点击减号可彻底删除选项</p>}
             </div>
 
             {/* Notes */}
@@ -345,7 +362,6 @@ const TransactionForm: React.FC<TransactionFormProps> = ({ people, initialData, 
 
           </div>
 
-          {/* Footer - Only Save Button Now */}
           <div className="p-4 pt-2 pb-10 border-t dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-shrink-0 z-20 shadow-[0_-5px_15px_rgba(0,0,0,0.05)]">
             <button
               type="submit"

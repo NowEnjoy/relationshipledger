@@ -1,9 +1,41 @@
 
 import { AppState, Person, Transaction, TransactionType } from '../types';
-import { STORAGE_KEY_DATA } from '../constants';
+import { STORAGE_KEY_DATA, STORAGE_KEY_TAGS } from '../constants';
 
 const generateId = (): string => {
   return Date.now().toString(36) + Math.random().toString(36).substring(2);
+};
+
+// --- Tag Library Management ---
+export const loadTags = (): string[] => {
+  const raw = localStorage.getItem(STORAGE_KEY_TAGS);
+  if (!raw) return [];
+  try {
+    return JSON.parse(raw);
+  } catch (e) {
+    return [];
+  }
+};
+
+export const saveTags = (tags: string[]): void => {
+  localStorage.setItem(STORAGE_KEY_TAGS, JSON.stringify(tags));
+};
+
+export const addTagToLibrary = (tag: string): string[] => {
+  const tags = loadTags();
+  if (!tags.includes(tag)) {
+    const newTags = [...tags, tag];
+    saveTags(newTags);
+    return newTags;
+  }
+  return tags;
+};
+
+export const removeTagFromLibrary = (tag: string): string[] => {
+  const tags = loadTags();
+  const newTags = tags.filter(t => t !== tag);
+  saveTags(newTags);
+  return newTags;
 };
 
 // --- Helper: Rebuild People State from Transactions ---
@@ -32,10 +64,10 @@ const recalculateState = (transactions: Transaction[]): AppState => {
 
     if (tx.type === TransactionType.GIVE) {
       p.totalGiven += tx.amount;
-      p.balance -= tx.amount; // Giving reduces the net balance
+      p.balance -= tx.amount;
     } else {
       p.totalReceived += tx.amount;
-      p.balance += tx.amount; // Receiving increases the net balance
+      p.balance += tx.amount;
     }
   });
 
@@ -65,11 +97,14 @@ export const saveData = (state: AppState): void => {
 
 export const clearAllData = (): void => {
   localStorage.removeItem(STORAGE_KEY_DATA);
+  localStorage.removeItem(STORAGE_KEY_TAGS);
 };
 
 export const exportDataJSON = (): void => {
   const state = loadData();
-  const jsonString = JSON.stringify(state, null, 2);
+  const tags = loadTags();
+  const exportPayload = { ...state, customTags: tags };
+  const jsonString = JSON.stringify(exportPayload, null, 2);
   const blob = new Blob([jsonString], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
@@ -110,6 +145,14 @@ export const importDataJSON = (jsonString: string): AppState => {
   try {
     const parsed = JSON.parse(jsonString);
     let importedTransactions: Transaction[] = [];
+    
+    // Handle custom tags import
+    if (parsed.customTags && Array.isArray(parsed.customTags)) {
+      const currentTags = loadTags();
+      const combinedTags = Array.from(new Set([...currentTags, ...parsed.customTags]));
+      saveTags(combinedTags);
+    }
+
     if (parsed.transactions && Array.isArray(parsed.transactions)) {
         importedTransactions = parsed.transactions;
     } else if (parsed.payload && typeof parsed.payload === 'object' && Array.isArray(parsed.payload.transactions)) {
