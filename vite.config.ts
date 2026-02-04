@@ -5,7 +5,7 @@ import react from '@vitejs/plugin-react';
 export default defineConfig({
   plugins: [react()],
   // Use relative base path to ensure assets load correctly on GitHub Pages (e.g. /repo-name/)
-  base: './', 
+  base: '/relationshipledger/', 
   server: {
     host: true, // This enables access from local network (iPhone)
     port: 5173
