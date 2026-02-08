@@ -7,7 +7,7 @@
 const STORAGE_KEY_LICENSE = 'rl_license_key';
 const STORAGE_KEY_ACTIVATED = 'rl_activated_status';
 const STORAGE_KEY_IS_ADMIN = 'rl_is_admin'; 
-const STORAGE_KEY_HISTORY = 'rl_license_history'; // 新增：激活码生成历史
+const STORAGE_KEY_HISTORY = 'rl_license_history';
 
 export interface LicenseHistoryItem {
   id: string;
@@ -16,24 +16,33 @@ export interface LicenseHistoryItem {
   licenseKey: string;
 }
 
-// 生成设备唯一标识
+/**
+ * 生成设备唯一标识 (硬件级指纹)
+ * 移除 UserAgent，使用更稳定的屏幕和硬件属性
+ */
 export const getDeviceId = (): string => {
-  const navigator_info = window.navigator.userAgent;
-  const screen_info = `${window.screen.width}x${window.screen.height}`;
-  const str = `${navigator_info}|${screen_info}`;
+  // 选取跨浏览器表现一致的硬件参数
+  const hardwareFeatures = [
+    window.screen.width,              // 屏幕物理宽度
+    window.screen.height,             // 屏幕物理高度
+    window.screen.colorDepth,         // 屏幕色彩深度
+    window.navigator.maxTouchPoints || 0, // 硬件最大触摸点数 (手机通常为 5 或 10)
+    // 某些浏览器可能屏蔽硬件并发数，赋予默认值以保证稳定性
+    (window.navigator as any).hardwareConcurrency || 8 
+  ].join('|');
   
+  // 简单的哈希算法
   let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    const char = str.charCodeAt(i);
+  for (let i = 0; i < hardwareFeatures.length; i++) {
+    const char = hardwareFeatures.charCodeAt(i);
     hash = ((hash << 5) - hash) + char;
     hash = hash & hash; 
   }
+  
+  // 转为 36 进制大写字符串
   return Math.abs(hash).toString(36).toUpperCase();
 };
 
-/**
- * 获取激活码历史记录
- */
 export const getLicenseHistory = (): LicenseHistoryItem[] => {
   const raw = localStorage.getItem(STORAGE_KEY_HISTORY);
   if (!raw) return [];
@@ -44,9 +53,6 @@ export const getLicenseHistory = (): LicenseHistoryItem[] => {
   }
 };
 
-/**
- * 记录激活码到历史
- */
 const recordLicenseToHistory = (deviceId: string, licenseKey: string) => {
   const history = getLicenseHistory();
   const newItem: LicenseHistoryItem = {
@@ -58,26 +64,21 @@ const recordLicenseToHistory = (deviceId: string, licenseKey: string) => {
   localStorage.setItem(STORAGE_KEY_HISTORY, JSON.stringify([newItem, ...history]));
 };
 
-/**
- * 【核心：激活码生成器】
- */
 export const generateLicenseForKey = (deviceId: string): string => {
   if (!deviceId || deviceId.length < 4) return "INVALID_ID";
   const prefix = deviceId.substring(0, 4).toUpperCase();
   const randomPart = Math.random().toString(36).substring(2, 6).toUpperCase();
   const licenseKey = `RL-${prefix}-${randomPart}`;
   
-  // 生成后自动记录到历史
   recordLicenseToHistory(deviceId, licenseKey);
-  
   return licenseKey;
 };
 
-// 验证激活码
 export const verifyLicense = async (licenseKey: string): Promise<boolean> => {
   const deviceId = getDeviceId();
   const devicePrefix = deviceId.substring(0, 4).toUpperCase();
 
+  // 管理员后门 Key
   if (licenseKey === 'RL-ADMIN-8888') {
     localStorage.setItem(STORAGE_KEY_ACTIVATED, 'true');
     localStorage.setItem(STORAGE_KEY_LICENSE, licenseKey);
@@ -85,6 +86,7 @@ export const verifyLicense = async (licenseKey: string): Promise<boolean> => {
     return true;
   }
   
+  // 验证激活码是否包含当前设备指纹前缀
   if (licenseKey.startsWith('RL-') && licenseKey.includes(devicePrefix) && licenseKey.length >= 10) {
     localStorage.setItem(STORAGE_KEY_ACTIVATED, 'true');
     localStorage.setItem(STORAGE_KEY_LICENSE, licenseKey);

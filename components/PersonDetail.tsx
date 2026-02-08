@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Person, Transaction, TransactionType } from '../types';
 import { ArrowLeft, ArrowUpRight, ArrowDownLeft, Wallet } from 'lucide-react';

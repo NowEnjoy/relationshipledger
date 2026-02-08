@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { AppState, Person, Transaction } from './types';
 import { loadData, saveData, addTransaction, updateTransaction, deleteTransaction, exportDataJSON, exportDataCSV, importDataJSON, clearAllData } from './services/storageService';
 import { isActivated, isAdmin, getDeviceId, generateLicenseForKey, getLicenseHistory, LicenseHistoryItem, clearLicenseHistory } from './services/authService'; 
-import { Home, Plus, Users, PieChart, Settings, Download, Upload, FileText, Trash2, AlertTriangle, ShieldCheck, Key, History, TrendingUp, BarChart3 } from 'lucide-react';
+import { Home, Plus, Users, PieChart, Settings, Download, Upload, FileText, Trash2, AlertTriangle, ShieldCheck, Key, History, TrendingUp, Smartphone, Info, Shield, Share2, HelpCircle } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 import Dashboard from './components/Dashboard';
 import TransactionForm from './components/TransactionForm';
@@ -38,8 +38,9 @@ function App() {
 
   useEffect(() => {
     setActivated(isActivated());
-    setUserIsAdmin(isAdmin());
-    if (isAdmin()) {
+    const adminStatus = isAdmin();
+    setUserIsAdmin(adminStatus);
+    if (adminStatus) {
       setLicenseHistory(getLicenseHistory());
     }
     setIsCheckingAuth(false);
@@ -47,11 +48,10 @@ function App() {
     setState(data);
   }, []);
 
-  // 计算每月生成趋势
   const trendData = useMemo(() => {
     const monthlyMap: Record<string, number> = {};
     licenseHistory.forEach(item => {
-      const month = item.date.substring(0, 7); // YYYY-MM
+      const month = item.date.substring(0, 7); 
       monthlyMap[month] = (monthlyMap[month] || 0) + 1;
     });
     return Object.keys(monthlyMap)
@@ -73,8 +73,15 @@ function App() {
   const handleGenerateKey = () => {
     const key = generateLicenseForKey(adminInputId.trim().toUpperCase());
     setGeneratedKey(key);
-    setLicenseHistory(getLicenseHistory()); // 刷新历史
+    setLicenseHistory(getLicenseHistory()); 
     setAdminInputId('');
+  };
+
+  const handleClearHistory = () => {
+    if (window.confirm('确定要清空所有授权生成历史吗？')) {
+      clearLicenseHistory();
+      setLicenseHistory([]);
+    }
   };
 
   const SettingsTab = () => (
@@ -83,7 +90,7 @@ function App() {
       
       <div className="bg-blue-600 rounded-2xl p-4 text-white shadow-lg flex items-center justify-between">
         <div>
-          <p className="text-blue-100 text-xs uppercase font-bold tracking-wider">软件授权状态</p>
+          <p className="text-blue-100 text-xs font-bold tracking-wider">软件授权状态 (License Status)</p>
           <p className="text-lg font-bold">{userIsAdmin ? '管理员模式' : '已激活 Pro 版'}</p>
         </div>
         <ShieldCheck size={32} className="text-blue-200" />
@@ -91,11 +98,10 @@ function App() {
 
       {userIsAdmin && (
         <>
-          {/* 激活码生成器 */}
           <div className="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm border border-amber-200 dark:border-amber-900/30">
-            <h2 className="text-sm font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider mb-3 flex items-center">
+            <h2 className="text-sm font-bold text-amber-600 dark:text-amber-400 tracking-wider mb-3 flex items-center">
               <Key size={16} className="mr-2" />
-              激活码生成工具
+              激活码生成工具 (License Generator)
             </h2>
             <div className="space-y-3">
               <input 
@@ -113,26 +119,31 @@ function App() {
                 生成并记录历史
               </button>
               {generatedKey && (
-                <div className="mt-2 p-3 bg-slate-50 dark:bg-slate-900 rounded-lg border border-dashed border-slate-300 dark:border-slate-700 select-all animate-in fade-in slide-in-from-top-2">
-                  <p className="text-[10px] text-slate-400 mb-1">本次生成 (点击复制):</p>
-                  <code className="text-lg font-mono font-bold text-blue-600 tracking-wider">{generatedKey}</code>
+                <div className="mt-2 p-3 bg-slate-50 dark:bg-slate-900 rounded-lg border border-dashed border-slate-300 dark:border-slate-700 animate-in fade-in slide-in-from-top-2">
+                  <p className="text-[10px] text-slate-400 mb-1 select-none">本次生成 (点击复制):</p>
+                  <code 
+                    onClick={() => {
+                      navigator.clipboard.writeText(generatedKey);
+                    }}
+                    className="text-lg font-mono font-bold text-blue-600 tracking-wider block select-all cursor-pointer hover:opacity-80 transition-opacity"
+                  >
+                    {generatedKey}
+                  </code>
                 </div>
               )}
             </div>
           </div>
 
-          {/* 生成统计与趋势 */}
           <div className="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-sm font-bold text-slate-400 uppercase tracking-wider flex items-center">
+              <h2 className="text-sm font-bold text-slate-400 tracking-wider flex items-center">
                 <TrendingUp size={16} className="mr-2" />
-                生成趋势统计
+                生成趋势统计 (Generation Stats)
               </h2>
               <span className="text-xs font-bold px-2 py-1 bg-blue-100 text-blue-600 rounded-full">
-                累计: {licenseHistory.length} 个
+                累计: {licenseHistory.length}
               </span>
             </div>
-            
             {trendData.length > 0 ? (
               <div className="h-40 w-full text-[10px]">
                 <ResponsiveContainer width="100%" height="100%">
@@ -150,41 +161,39 @@ function App() {
             )}
           </div>
 
-          {/* 历史记录列表 */}
-          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm overflow-hidden">
-             <div className="px-4 py-3 bg-slate-50 dark:bg-slate-900/50 flex justify-between items-center">
-                <h2 className="text-sm font-bold text-slate-400 uppercase tracking-wider flex items-center">
-                  <History size={16} className="mr-2" />
-                  生成历史 (History)
-                </h2>
-                <button 
-                  onClick={() => { if(confirm('确定清空所有生成记录？')) { clearLicenseHistory(); setLicenseHistory([]); } }}
-                  className="text-[10px] text-red-500 hover:underline"
-                >
-                  清空记录
-                </button>
-             </div>
-             <div className="max-h-60 overflow-y-auto no-scrollbar">
-               {licenseHistory.length === 0 ? (
-                 <p className="p-10 text-center text-xs text-slate-400">暂无生成记录</p>
-               ) : (
-                 licenseHistory.map(item => (
-                   <div key={item.id} className="p-3 border-b dark:border-slate-700 last:border-0 hover:bg-slate-50 dark:hover:bg-slate-900/30 transition-colors">
-                      <div className="flex justify-between items-start mb-1">
-                        <code className="text-xs font-bold text-blue-600 select-all">{item.licenseKey}</code>
-                        <span className="text-[10px] text-slate-400">{item.date.split('T')[0]}</span>
-                      </div>
-                      <p className="text-[10px] text-slate-500 font-mono">Device: {item.deviceId}</p>
-                   </div>
-                 ))
-               )}
-             </div>
+          <div className="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm">
+            <div className="flex justify-between items-center mb-4">
+               <h2 className="text-sm font-bold text-slate-400 tracking-wider flex items-center">
+                <History size={16} className="mr-2" />
+                生成历史记录 (License History)
+              </h2>
+              {licenseHistory.length > 0 && (
+                <button onClick={handleClearHistory} className="text-[10px] text-red-500 hover:underline">清空记录</button>
+              )}
+            </div>
+            <div className="max-h-48 overflow-y-auto space-y-2 pr-1 no-scrollbar">
+              {licenseHistory.length === 0 ? (
+                <p className="text-center py-4 text-xs text-slate-400">尚无生成历史</p>
+              ) : (
+                licenseHistory.map(item => (
+                  <div key={item.id} className="p-2 bg-slate-50 dark:bg-slate-900/50 rounded-lg border border-slate-100 dark:border-slate-700 flex justify-between items-center text-[10px]">
+                    <div className="space-y-0.5">
+                      <p className="font-mono font-bold text-blue-600 select-all">{item.licenseKey}</p>
+                      <p className="text-slate-400">Device: {item.deviceId}</p>
+                    </div>
+                    <div className="text-right text-slate-400">
+                      {item.date.split('T')[0]}
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
           </div>
         </>
       )}
 
       <div className="bg-white dark:bg-slate-800 rounded-2xl overflow-hidden shadow-sm">
-        <h2 className="px-4 py-3 text-sm font-bold text-slate-400 uppercase tracking-wider bg-slate-50 dark:bg-slate-900/50">数据管理 (Data)</h2>
+        <h2 className="px-4 py-3 text-sm font-bold text-slate-400 tracking-wider bg-slate-50 dark:bg-slate-900/50">数据管理 (Data)</h2>
         <button onClick={exportDataJSON} className="w-full flex items-center space-x-3 p-4 hover:bg-slate-50 dark:hover:bg-slate-700 text-left border-b dark:border-slate-700">
           <div className="bg-blue-100 text-blue-500 p-2 rounded-lg"><Download size={20} /></div>
           <div className="flex-1">
@@ -235,15 +244,62 @@ function App() {
         </button>
       </div>
 
-      <div className="p-4 text-xs text-slate-400 bg-slate-50 dark:bg-slate-900 rounded-xl leading-relaxed">
-        <p className="mb-2 font-bold text-slate-500 dark:text-slate-300">隐私声明 (Privacy Policy):</p>
-        <p>您的所有账本记录完全存储在设备本地，绝不进行云端传输。激活码仅用于设备身份核验。</p>
-        <p className="mt-1 text-amber-600 dark:text-amber-500 font-medium">温馨提示：由于数据仅在本地存储，请务必定期使用导出功能进行备份，以防因浏览器清理缓存或更换设备导致数据丢失。</p>
-        <p className="mt-2 text-[10px]">您的 Device ID: <span className="font-mono">{getDeviceId()}</span></p>
+      <div className="bg-slate-50 dark:bg-slate-800/40 border border-blue-100 dark:border-blue-900/30 rounded-2xl p-4 space-y-4">
+        <h2 className="text-sm font-bold text-blue-600 dark:text-blue-400 tracking-wider flex items-center">
+          <Smartphone size={16} className="mr-2" />
+          安装指南 (Installation)
+        </h2>
+        <div className="space-y-4">
+          <div className="flex items-start space-x-3">
+            <div className="bg-blue-100 dark:bg-blue-900/50 text-blue-600 p-1.5 rounded-lg mt-0.5"><Info size={14}/></div>
+            <div className="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed">
+              <strong>iPhone/iOS 安装：</strong> 请务必使用 <span className="text-blue-600 font-bold">Safari 浏览器</span> 打开。点击底部工具栏中间的 <span className="text-blue-600 font-bold">“分享”按钮</span>（向上箭头图标），下拉找到并点击 <span className="text-blue-600 font-bold">“添加到主屏幕”</span>。
+            </div>
+          </div>
+          <div className="flex items-start space-x-3">
+            <div className="bg-blue-100 dark:bg-blue-900/50 text-blue-600 p-1.5 rounded-lg mt-0.5"><Info size={14}/></div>
+            <div className="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed">
+              <strong>华为/安卓安装：</strong> 优先推荐使用 <span className="text-blue-600 font-bold">系统自带浏览器</span> 或 <span className="text-blue-600 font-bold">Microsoft Edge</span>。点击菜单中的 <span className="text-blue-600 font-bold">“添加到主屏幕”</span> 或 <span className="text-blue-600 font-bold">“安装应用”</span>。
+            </div>
+          </div>
+          <div className="bg-amber-50 dark:bg-amber-900/20 p-3 rounded-xl border border-amber-100 dark:border-amber-900/40 space-y-2">
+            <p className="text-xs font-bold text-amber-700 dark:text-amber-400 flex items-center">
+              <HelpCircle size={14} className="mr-1" /> 点击“添加”没反应怎么办？
+            </p>
+            <div className="text-[10px] text-amber-600/80 dark:text-amber-500/80 leading-relaxed">
+              <p className="mb-1">1. <strong>检查浏览器：</strong> 若自带浏览器不支持，请前往应用商店下载 <strong>Microsoft Edge</strong> 或 <strong>夸克 (Quark)</strong>，它们对桌面图标的支持非常完美。</p>
+              <p>2. <strong>检查系统权限：</strong> 请前往手机的 <strong>“设置 - 应用管理 - [浏览器名称] - 权限管理”</strong>，确保 <strong>“桌面快捷方式”</strong> 权限已开启，否则无法创建图标。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="p-5 text-xs text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl space-y-3 shadow-sm">
+        <div className="flex items-center space-x-2 text-slate-800 dark:text-slate-200 font-bold">
+          <Shield size={16} className="text-blue-500" />
+          <span>隐私与安全声明 (Privacy & Security)</span>
+        </div>
+        
+        <p className="leading-relaxed">
+          <strong>为保护您的隐私数据</strong>，本程序采用“全离线架构”。您的每一笔账本记录、备注以及人脉信息均<strong>仅严格存储于您当前的设备本地</strong>，绝不进行任何形式的云端传输或后台收集。
+        </p>
+
+        <div className="pt-2 border-t dark:border-slate-700 space-y-1">
+          <p className="text-amber-600 dark:text-amber-500 font-bold flex items-center">
+             <AlertTriangle size={14} className="mr-1" /> 重要提醒 (Important Reminder)
+          </p>
+          <p className="text-[10px] leading-relaxed">
+            由于数据和激活状态存储在浏览器各自的“沙箱”中，如果您在不同浏览器打开，需要<strong>重复输入相同的激活码</strong>进行解锁。同时，请务必定期使用导出功能备份数据。
+          </p>
+        </div>
+
+        <p className="mt-2 text-[10px] opacity-60">
+          您的设备标识 (Device ID): <span className="font-mono">{getDeviceId()}</span>
+        </p>
       </div>
 
       <div className="flex flex-col items-center justify-center py-6 space-y-1 opacity-40">
-        <p className="text-[10px] font-bold tracking-widest text-slate-500 dark:text-slate-400 uppercase">
+        <p className="text-[10px] font-bold tracking-widest text-slate-500 dark:text-slate-400">
           Copyright © 2025 FF. All Rights Reserved.
         </p>
         <p className="text-[9px] font-medium tracking-tight text-slate-400">

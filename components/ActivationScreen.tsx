@@ -49,7 +49,7 @@ const ActivationScreen: React.FC<ActivationScreenProps> = ({ onActivated }) => {
             <Smartphone size={14} className="mr-1" />
             <span>当前设备标识 (Device ID):</span>
           </div>
-          <code className="text-lg font-mono font-bold text-blue-600 dark:text-blue-400 block tracking-widest text-center">
+          <code className="text-lg font-mono font-bold text-blue-600 dark:text-blue-400 block tracking-widest text-center select-all">
             {deviceId}
           </code>
         </div>
@@ -84,7 +84,7 @@ const ActivationScreen: React.FC<ActivationScreenProps> = ({ onActivated }) => {
         {/* Sales Link */}
         <div className="pt-4 border-t dark:border-slate-700">
           <a 
-            href="https://www.xiaohongshu.com/goods-detail/698811a0265eb90001edbc59?t=1770525213664&xsec_token=ABaMCLbvVdf-wDxINkwyurfp4pOZgfIAbZrHgnHkUG0dU%3D&xsec_source=app_arkselfshare" // 替换为你的小红书店铺链接
+            href="https://www.xiaohongshu.com/goods-detail/698811a0265eb90001edbc59?t=1770525213664&xsec_token=ABaMCLbvVdf-wDxINkwyurfp4pOZgfIAbZrHgnHkUG0dU%3D&xsec_source=app_arkselfshare"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center justify-center space-x-2 text-blue-500 font-medium hover:underline"

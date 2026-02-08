@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo } from 'react';
 import { Transaction, TransactionType } from '../types';
 import { ArrowUpRight, ArrowDownLeft, Wallet, Search, X } from 'lucide-react';
