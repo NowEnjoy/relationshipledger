@@ -84,7 +84,7 @@ const ActivationScreen: React.FC<ActivationScreenProps> = ({ onActivated }) => {
         {/* Sales Link */}
         <div className="pt-4 border-t dark:border-slate-700">
           <a 
-            href="https://www.xiaohongshu.com/goods-detail/6982e6973067f400014a52a3?t=1770186546965&xsec_token=AB3fLF4CXXhu0Azp-i6qEFYaZyNdxu2lZE9yO9DlzE9tM%3D&xsec_source=app_arkselfshare" // 替换为你的小红书店铺链接
+            href="https://www.xiaohongshu.com/goods-detail/698811a0265eb90001edbc59?t=1770525213664&xsec_token=ABaMCLbvVdf-wDxINkwyurfp4pOZgfIAbZrHgnHkUG0dU%3D&xsec_source=app_arkselfshare" // 替换为你的小红书店铺链接
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center justify-center space-x-2 text-blue-500 font-medium hover:underline"
